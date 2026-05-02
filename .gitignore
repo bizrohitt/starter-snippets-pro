@@ -1,0 +1,36 @@
+# WordPress Plugin Git Ignore
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.settings/
+
+# Dependencies
+vendor/
+node_modules/
+
+# Logs
+error_log
+php_errors.log
+*.log
+
+# Build files
+dist/
+build/
+*.zip
+
+# Local config
+.env
+local-config.php
+
+# WordPress specific
+wp-cli.local.yml
+sftp-config.json
