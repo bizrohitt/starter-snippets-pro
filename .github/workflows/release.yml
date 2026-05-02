@@ -1,0 +1,48 @@
+name: 🚀 Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Get Version
+        id: get_version
+        run: |
+          # Robust version extraction
+          VERSION=$(grep "Version:" starter-snippets.php | head -1 | awk '{print $NF}' | tr -d '\r')
+          echo "VER=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected Version: $VERSION"
+
+      - name: 📦 Build ZIP
+        run: |
+          VERSION="${{ steps.get_version.outputs.VER }}"
+          ZIP_NAME="starter-snippets-pro-v$VERSION.zip"
+          mkdir -p build/starter-snippets-pro
+          rsync -av ./ build/starter-snippets-pro/ --exclude '.git*' --exclude '.github' --exclude 'build'
+          cd build && zip -r "../$ZIP_NAME" starter-snippets-pro/
+          cd ..
+          if [ -f "$ZIP_NAME" ]; then echo "✅ ZIP created: $ZIP_NAME"; else echo "❌ ZIP failed"; exit 1; fi
+
+      - name: 🎉 Create/Update Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "starter-snippets-pro-v${{ steps.get_version.outputs.VER }}.zip"
+          tag: "v${{ steps.get_version.outputs.VER }}"
+          name: "Starter Snippets Pro v${{ steps.get_version.outputs.VER }}"
+          body: "Automated build for version ${{ steps.get_version.outputs.VER }}. Pushed to main."
+          allowUpdates: true
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}

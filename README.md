@@ -129,3 +129,5 @@ starter-snippets/
 ## License
 
 GPL-2.0+ — https://www.gnu.org/licenses/gpl-2.0.html
+
+Built with ❤️ by Rohitt.
